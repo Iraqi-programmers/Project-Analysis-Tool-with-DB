@@ -1,0 +1,132 @@
+﻿<Window x:Class="SpAnalyzerTool.MainMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpAnalyzerTool.View"
+        mc:Ignorable="d"
+        Title="الرئيسية"
+        Height="400" Width="400"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
+        Background="#F8F8F8">
+
+    <Window.Resources>
+        <Style x:Key="StyledButton" TargetType="Button">
+            <Setter Property="Background" Value="#FF4CAF50"/>
+            <!-- أخضر -->
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderBrush" Value="#FF388E3C"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FF388E3C"/>
+                                <!-- أغمق عند Hover -->
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FF2E7D32"/>
+                                <!-- أغمق أكثر عند الضغط -->
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#FFBDBDBD"/>
+                                <Setter Property="Foreground" Value="#FFEEEEEE"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Border CornerRadius="12" Background="White" Padding="10" Margin="10" BorderBrush="#DDD" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect Color="Black"
+                          Opacity="0.2"
+                          BlurRadius="10"
+                          ShadowDepth="3"/>
+            </Border.Effect>
+
+            <Grid>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical" >
+
+                <TextBlock Text="🛠️ اختر وضع التحليل"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="#333"
+                           TextAlignment="Center"
+                           Margin="0 0 0 30"/>
+
+                <Button  Content="🔌 الإتصال بقاعدة البيانات"
+                         Style="{StaticResource StyledButton}"
+                        Height="45"
+                       
+                        Background="#007ACC"
+                        Foreground="White"
+                        FontSize="16"
+                        
+                        Cursor="Hand"
+                        Click="DatabaseMode_Click"/>
+
+                <Button Content="🗃️ .bak File"
+                        Style="{StaticResource StyledButton}"
+                        Height="45"
+                        Background="#28A745"
+                        Foreground="White"
+                        FontSize="16"
+                       
+                        Cursor="Hand"
+                        Click="BackupMode_Click"/>
+
+                <Button Content="📂 دمج الإجراءات "
+        Style="{StaticResource StyledButton}"
+        Height="45"
+        Background="#FF9800"
+        Foreground="White"
+        FontSize="16"  
+        Cursor="Hand"
+        Click="OpenMergePage_Click"/>
+
+
+
+            </StackPanel>
+
+
+                <Button Content="❓"
+        Width="30"
+        Height="30"
+        FontSize="16"
+        Background="Transparent"
+        BorderThickness="0"
+        ToolTip="حول البرنامج"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Top"
+        Margin="0"
+        Click="ShowHelp_Click"/>
+
+
+            </Grid>
+            
+       
+            
+            
+        </Border>
+    </Grid>
+</Window>

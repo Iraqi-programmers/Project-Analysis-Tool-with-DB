@@ -1,2 +1,23 @@
 # Project-Analysis-Tool-with-DB
-This tool helps you analyze a project with the database in three ways: 1. Connect directly to the database 2. Use a backup file 3. Merge two backup files
+This tool helps you analyze a project with the database in three ways: 
+1. Connect directly to the database
+2. Use a backup file 
+3. Merge two backup files
+
+
+---------------------------------
+تساعدك هذه الاداة على تحليل مشروع مع قواعد البيانات(الإجرارات المستخدمه في المشروع) من خلال ثلاث طرق
+الاولى : الاتصال بقاعدة البيانات مباشر
+الثاني : عن طريق ملف الباك اب
+الثالث : عن طريق دمج ملفين باك اب
+----------------------------------
+
+
+***ملاحظـة***
+هذا المشروع مفتوح المصدر و قيد التطوير 
+بإمكانك المساهمة في تطويره عن طريق اخذ نسخة منة
+*تحسين الكود
+*أضافة ميزات جديدة
+*تحسين ميزة موجودة
+*حل اخطاء
+وبعدها ارفع تعديلك الى هذا المستودع 

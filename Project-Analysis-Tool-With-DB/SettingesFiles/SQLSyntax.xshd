@@ -1,0 +1,340 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="SQL" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Keyword" foreground="Blue" fontWeight="bold" />
+	<Color name="Parameter" foreground="Purple" />
+	<Color name="String" foreground="DarkGreen" />
+	<Color name="Comment" foreground="Green" fontStyle="italic" />
+	<Color name="Brackets" foreground="DarkOrange" />
+	<Color name="ProcedureBlock" foreground="Purple" fontWeight="bold" />
+	<Color name="DataType" foreground="#2B91AF" fontStyle="italic" />
+	<Color name="Function" foreground="#FF8C00" fontWeight="bold" />
+
+
+
+	<RuleSet ignoreCase="true">
+		<!-- الكلمات المفتاحية -->
+		<Keywords color="Keyword">
+			<!-- الكلمات الموجودة لديك بالفعل -->
+			<Word>SELECT</Word>
+			<Word>OR</Word>
+			<Word>FROM</Word>
+			<Word>WHERE</Word>
+			<Word>INSERT</Word>
+			<Word>INTO</Word>
+			<Word>UPDATE</Word>
+			<Word>DELETE</Word>
+			<Word>JOIN</Word>
+			<Word>INNER</Word>
+			<Word>OUTER</Word>
+			<Word>LEFT</Word>
+			<Word>RIGHT</Word>
+			<Word>GROUP BY</Word>
+			<Word>ORDER BY</Word>
+			<Word>HAVING</Word>
+			<Word>CREATE</Word>
+			<Word>ALTER</Word>
+			<Word>DROP</Word>
+			<Word>TABLE</Word>
+
+			<!-- الكلمات المحجوزة الإضافية -->
+			<Word>ADD</Word>
+			<Word>ALL</Word>
+			<Word>AND</Word>
+			<Word>ANY</Word>
+			<Word>AS</Word>
+			<Word>ASC</Word>
+			<Word>BACKUP</Word>
+			
+			<Word>BETWEEN</Word>
+			<Word>BREAK</Word>
+			<Word>BROWSE</Word>
+			<Word>BULK</Word>
+			<Word>BY</Word>
+			<Word>CASCADE</Word>
+			<Word>CASE</Word>
+			<Word>CHECK</Word>
+			<Word>CHECKPOINT</Word>
+			<Word>CLOSE</Word>
+			<Word>CLUSTERED</Word>
+			<Word>COLLATE</Word>
+			<Word>COLUMN</Word>
+			<Word>COMMIT</Word>
+			<Word>COMPUTE</Word>
+			<Word>CONSTRAINT</Word>
+			<Word>CONTAINS</Word>
+			<Word>CONTAINSTABLE</Word>
+			<Word>CONTINUE</Word>
+			<Word>CONVERT</Word>
+			<Word>CROSS</Word>
+			<Word>CURRENT</Word>
+			<Word>CURRENT_USER</Word>
+			<Word>DATABASE</Word>
+			<Word>DBCC</Word>
+			<Word>DEALLOCATE</Word>
+			<Word>DECLARE</Word>
+			<Word>DEFAULT</Word>
+			<Word>DENY</Word>
+			<Word>DESC</Word>
+			<Word>DISK</Word>
+			<Word>DISTINCT</Word>
+			<Word>DISTRIBUTED</Word>
+			<Word>DOUBLE</Word>
+			<Word>DUMP</Word>
+			<Word>ELSE</Word>
+			<Word>NOCOUNT</Word>
+			<Word>ERRLVL</Word>
+			<Word>ESCAPE</Word>
+			<Word>EXCEPT</Word>
+			<Word>EXEC</Word>
+			<Word>EXECUTE</Word>
+			<Word>EXISTS</Word>
+			<Word>EXIT</Word>
+			<Word>FETCH</Word>
+			<Word>FILE</Word>
+			<Word>FILLFACTOR</Word>
+			<Word>FOR</Word>
+			<Word>FOREIGN</Word>
+			<Word>FREETEXT</Word>
+			<Word>FREETEXTTABLE</Word>
+			<Word>FULL</Word>
+			<Word>FUNCTION</Word>
+			<Word>GOTO</Word>
+			<Word>GRANT</Word>
+			<Word>IDENTITY</Word>
+			<Word>IDENTITY_INSERT</Word>
+			<Word>IF</Word>
+			<Word>INDEX</Word>
+			<Word>IN</Word>
+			<Word>IS</Word>
+			<Word>KEY</Word>
+			<Word>KILL</Word>
+			<Word>LIKE</Word>
+			<Word>LINENO</Word>
+			<Word>LOAD</Word>
+			<Word>MERGE</Word>
+			<Word>NATIONAL</Word>
+			<Word>NOCHECK</Word>
+			<Word>NONCLUSTERED</Word>
+			<Word>NOT</Word>
+			<Word>NULL</Word>
+			<Word>OF</Word>
+			<Word>OFF</Word>
+			<Word>OFFSETS</Word>
+			<Word>ON</Word>
+			<Word>OPEN</Word>
+			<Word>OPENDATASOURCE</Word>
+			<Word>OPENQUERY</Word>
+			<Word>OPENROWSET</Word>
+			<Word>OPENXML</Word>
+			<Word>OPTION</Word>
+			<Word>OVER</Word>
+			<Word>PERCENT</Word>
+			<Word>PIVOT</Word>
+			<Word>PLAN</Word>
+			<Word>PRECISION</Word>
+			<Word>PRIMARY</Word>
+			<Word>PRINT</Word>
+			<Word>PROC</Word>
+			<Word>PROCEDURE</Word>
+			<Word>PUBLIC</Word>
+			<Word>RAISERROR</Word>
+			<Word>READ</Word>
+			<Word>READTEXT</Word>
+			<Word>RECONFIGURE</Word>
+			<Word>REFERENCES</Word>
+			<Word>REPLICATION</Word>
+			<Word>RESTORE</Word>
+			<Word>RESTRICT</Word>
+			<Word>RETURN</Word>
+			<Word>REVERT</Word>
+			<Word>REVOKE</Word>
+			<Word>ROLLBACK</Word>
+			<Word>ROWCOUNT</Word>
+			<Word>ROWGUIDCOL</Word>
+			<Word>RULE</Word>
+			<Word>SAVE</Word>
+			<Word>SCHEMA</Word>
+			<Word>SECURITYAUDIT</Word>
+			<Word>SEMANTICKEYPHRASETABLE</Word>
+			<Word>SEMANTICSIMILARITYDETAILSTABLE</Word>
+			<Word>SEMANTICSIMILARITYTABLE</Word>
+			<Word>SESSION_USER</Word>
+			<Word>SET</Word>
+			<Word>SETUSER</Word>
+			<Word>SHUTDOWN</Word>
+			<Word>SOME</Word>
+			<Word>STATISTICS</Word>
+			<Word>SYSTEM_USER</Word>
+			<Word>TABLESAMPLE</Word>
+			<Word>TEXTSIZE</Word>
+			<Word>THEN</Word>
+			<Word>TO</Word>
+			<Word>TOP</Word>
+			<Word>TRAN</Word>
+			<Word>TRANSACTION</Word>
+			<Word>TRIGGER</Word>
+			<Word>TRUNCATE</Word>
+			<Word>TSEQUAL</Word>
+			<Word>UNION</Word>
+			<Word>UNIQUE</Word>
+			<Word>UNPIVOT</Word>
+			<Word>USE</Word>
+			<Word>USER</Word>
+			<Word>VALUES</Word>
+			<Word>VARYING</Word>
+			<Word>VIEW</Word>
+			<Word>WAITFOR</Word>
+			<Word>WHEN</Word>
+			<Word>WHILE</Word>
+			<Word>WITH</Word>
+			<Word>WRITETEXT</Word>
+		</Keywords>
+
+		<!-- أنواع البيانات في SQL -->
+		<Keywords color="DataType">
+			<!-- الأنواع الرقمية -->
+			<Word>INT</Word>
+			<Word>SMALLINT</Word>
+			<Word>BIGINT</Word>
+			<Word>TINYINT</Word>
+			<Word>DECIMAL</Word>
+			<Word>NUMERIC</Word>
+			<Word>FLOAT</Word>
+			<Word>REAL</Word>
+			<Word>MONEY</Word>
+			<Word>SMALLMONEY</Word>
+
+			<!-- الأنواع النصية -->
+			<Word>CHAR</Word>
+			<Word>VARCHAR</Word>
+			<Word>TEXT</Word>
+			<Word>NCHAR</Word>
+			<Word>NVARCHAR</Word>
+			<Word>NTEXT</Word>
+
+			<!-- الأنواع التاريخية -->
+			<Word>DATE</Word>
+			<Word>TIME</Word>
+			<Word>DATETIME</Word>
+			<Word>DATETIME2</Word>
+			<Word>SMALLDATETIME</Word>
+			<Word>DATETIMEOFFSET</Word>
+			<Word>TIMESTAMP</Word>
+
+			<!-- الأنواع الثنائية -->
+			<Word>BINARY</Word>
+			<Word>VARBINARY</Word>
+			<Word>IMAGE</Word>
+
+			<!-- أنواع أخرى -->
+			<Word>BIT</Word>
+			<Word>UNIQUEIDENTIFIER</Word>
+			<Word>SQL_VARIANT</Word>
+			<Word>XML</Word>
+			<Word>JSON</Word>
+			<Word>GEOMETRY</Word>
+			<Word>GEOGRAPHY</Word>
+			<Word>HIERARCHYID</Word>
+			<Word>CURSOR</Word>
+		</Keywords>
+
+
+		<!-- الدوال الجاهزة في SQL -->
+		<Keywords color="Function">
+			<!-- الدوال الرياضية -->
+			<Word>ABS</Word>
+			<Word>CEILING</Word>
+			<Word>FLOOR</Word>
+			<Word>ROUND</Word>
+			<Word>RAND</Word>
+			<Word>SQRT</Word>
+			<Word>SQUARE</Word>
+			<Word>POWER</Word>
+			<Word>LOG</Word>
+			<Word>LOG10</Word>
+			<Word>SIN</Word>
+			<Word>COS</Word>
+			<Word>TAN</Word>
+
+			<!-- دوال التجميع -->
+			<Word>COUNT</Word>
+			<Word>SUM</Word>
+			<Word>AVG</Word>
+			<Word>MIN</Word>
+			<Word>MAX</Word>
+			<Word>STDEV</Word>
+			<Word>VAR</Word>
+
+			<!-- الدوال النصية -->
+			<Word>LEN</Word>
+			<Word>LOWER</Word>
+			<Word>UPPER</Word>
+			<Word>LTRIM</Word>
+			<Word>RTRIM</Word>
+			<Word>TRIM</Word>
+			<Word>SUBSTRING</Word>
+			<Word>CHARINDEX</Word>
+			<Word>PATINDEX</Word>
+			<Word>REPLACE</Word>
+			<Word>REPLICATE</Word>
+			<Word>REVERSE</Word>
+			<Word>CONCAT</Word>
+			<Word>FORMAT</Word>
+
+			<!-- الدوال التاريخية -->
+			<Word>GETDATE</Word>
+			<Word>DATEADD</Word>
+			<Word>DATEDIFF</Word>
+			<Word>DATEPART</Word>
+			<Word>YEAR</Word>
+			<Word>MONTH</Word>
+			<Word>DAY</Word>
+			<Word>ISDATE</Word>
+
+			<!-- دوال التحويل -->
+			<Word>CAST</Word>
+			<Word>CONVERT</Word>
+			<Word>PARSE</Word>
+			<Word>TRY_CAST</Word>
+			<Word>TRY_CONVERT</Word>
+			<Word>TRY_PARSE</Word>
+
+			<!-- دوال النظام -->
+			<Word>ISNULL</Word>
+			<Word>NULLIF</Word>
+			<Word>COALESCE</Word>
+			<Word>IIF</Word>
+			<Word>CHOOSE</Word>
+		</Keywords>
+		
+		<!-- البارامترات (مثل @param) -->
+		<Rule color="Parameter">@[a-zA-Z_][a-zA-Z0-9_]*</Rule>
+
+		<!-- كتل BEGIN/END -->
+		<Keywords color="ProcedureBlock">
+			<Word>BEGIN</Word>
+			<Word>END</Word>
+			<Word>end</Word>
+			<Word>begin</Word>
+		</Keywords>
+
+		
+		<!-- الأقواس -->
+		<Rule color="Brackets">[\(\)]</Rule>
+		
+		<!-- النصوص بين علامتي اقتباس - النسخة الصحيحة -->
+		<Span color="String" multiline="false">
+			<Begin>'</Begin>
+			<End>'</End>
+		</Span>
+
+		<!-- التعليقات أحادية السطر -->
+		<Rule color="Comment">--.*$</Rule>
+
+		<!-- التعليقات متعددة الأسطر -->
+		<Span color="Comment" multiline="true">
+			<Begin>/\*</Begin>
+			<End>\*/</End>
+		</Span>
+	</RuleSet>
+</SyntaxDefinition>

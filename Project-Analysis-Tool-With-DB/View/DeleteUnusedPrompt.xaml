@@ -1,0 +1,28 @@
+﻿<Window x:Class="SpAnalyzerTool.View.DeleteUnusedPrompt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpAnalyzerTool.View"
+        mc:Ignorable="d"
+      Height="170" Width="400" Title="إدخال اتصال قاعدة البيانات" WindowStartupLocation="CenterScreen">
+        
+    <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="🔗 أدخل سلسلة الاتصال بقاعدة البيانات" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+            <TextBox x:Name="txtConnectionString" Grid.Row="1" Height="100" TextWrapping="Wrap" AcceptsReturn="True"/>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <Button FontSize="15" Content="✅ موافق" Width="80" Click="Ok_Click"/>
+            <Button FontSize="15" Content="❌ إلغاء" Width="80" Margin="10,0,0,0" Click="Cancel_Click"/>
+        </StackPanel>
+        
+        </Grid>
+    
+</Window>
+

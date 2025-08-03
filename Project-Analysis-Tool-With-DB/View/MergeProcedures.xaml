@@ -1,0 +1,107 @@
+﻿<Window x:Class="SpAnalyzerTool.View.MergeProcedures"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpAnalyzerTool.View"
+        mc:Ignorable="d"
+        Title="📂 .bak دمج الاجراءات من ملفي"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+       Height="750" Width="850">
+
+    <Window.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}"/>
+
+        <Style TargetType="TextBlock" BasedOn="{StaticResource HeaderTextBlock}">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <Style TargetType="GroupBox" >
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderBrush" Value="DarkGreen"/>
+        </Style>
+        
+    </Window.Resources>
+    
+    <ScrollViewer>
+        <StackPanel Margin="20" Orientation="Vertical" >
+
+          
+
+            <!-- اختيار ملفات الباك -->
+            <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Center">
+                <Button Content="استعراض" Margin="10,0" Width="80" Click="BrowseBak1_Click"/>
+                <TextBox x:Name="txtBak1" Width="400" Height="25"/>
+                <TextBlock Text="🔍 الملف الاول  " Width="160" FontSize="14" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Center">
+                <Button Content="استعراض" Margin="10,0" Width="80" Click="BrowseBak2_Click"/>
+                <TextBox x:Name="txtBak2" Width="400" Height="25"/>
+                <TextBlock Text="🔍 الملف الثاني" Width="160" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <!-- زر الدمج -->
+            <Button Content="🔄 تحليل ودمج الإجراءات"
+                 Width="220" Height="40" Margin="0 10"
+                 HorizontalAlignment="Center"
+                 Click="AnalyzeAndMerge_Click"/>
+
+            <!-- عرض الإجراءات من كل bak -->
+            <Grid Margin="10" x:Name="grdBakResult" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- من bak 1 -->
+                <GroupBox Header="📁 الملف الاول" Grid.Column="0" Margin="5">
+                    <ListBox x:Name="ListBoxLeft" DisplayMemberPath="Name" Height="200" BorderThickness="0"/>
+                </GroupBox>
+
+                <!-- من bak 2 -->
+                <GroupBox Header="📁 الملف الثاني" Grid.Column="1" Margin="5">
+                    <ListBox x:Name="ListBoxRight" DisplayMemberPath="Name" Height="200" BorderThickness="0"/>
+                </GroupBox>
+            </Grid>
+
+            <!-- الإجراءات المدموجة -->
+            <GroupBox Header="🧪 الإجراءات بعد الدمج" Margin="0,0,0,10" x:Name="grbResult" Visibility="Collapsed" >
+                <ListView x:Name="MergedList" Height="200" BorderThickness="0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding IsExcluded}" Margin="5"/>
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="5,0"/>
+                                <TextBlock Text=" (من: " Foreground="Gray"/>
+                                <TextBlock Text="{Binding SourceDatabase}" Foreground="Gray"/>
+                                <TextBlock Text=")" Foreground="Gray"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </GroupBox>
+
+           
+            <!-- اسم الباك الجديد -->
+            <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Right" Visibility="Collapsed" x:Name="stNewBakName">
+                <TextBox x:Name="txtOutputBakName" Width="300" Text="MergedOutput.bak" Height="30"/>
+                <TextBlock Text="📦 : اسم ملف النتائج" Width="160" Margin="20,0,-35,0"  />
+            </StackPanel>
+
+            <!-- زر الحفظ -->
+            <Button Content="💾 حفظ الإجراءات " x:Name="btnSave" Visibility="Collapsed"
+                 Width="300" Height="40" Margin="0,20"
+                 HorizontalAlignment="Center"
+                 Click="SaveMergedProcedures_Click"/>
+
+            <!-- ملخص -->
+            <TextBlock x:Name="txtSummary" FontSize="14" Foreground="#444" Margin="0,10"/>
+       
+        </StackPanel>
+    </ScrollViewer>
+
+
+</Window>
