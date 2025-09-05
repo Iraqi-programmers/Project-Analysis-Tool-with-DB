@@ -8,6 +8,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+	  
+	<RootNamespace>Project_Analysis_Tool_With_DB</RootNamespace>
+
   </PropertyGroup>
 
   <ItemGroup>

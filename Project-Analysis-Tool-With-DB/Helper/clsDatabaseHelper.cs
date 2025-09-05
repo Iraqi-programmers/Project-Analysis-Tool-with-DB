@@ -4,6 +4,7 @@ using SpAnalyzerTool.Models;
 using SpAnalyzerTool.ProcedureMergeEngine;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -21,13 +22,18 @@ namespace SpAnalyzerTool
         public static async Task<List<string>> GetAllStoredProceduresAsync(string connectionString)
         {
 
-            var procedures = new List<string>();
-
-            using (var conn = new SqlConnection(connectionString))
+            try
             {
-                await conn.OpenAsync();
 
-                using (var cmd = new SqlCommand(@"
+
+                var procedures = new List<string>();
+
+                using (var conn = new SqlConnection(connectionString))
+                {
+
+                    await conn.OpenAsync();
+
+                    using (var cmd = new SqlCommand(@"
                          SELECT p.name
                          FROM sys.procedures p
                          LEFT JOIN sys.extended_properties ep 
@@ -36,16 +42,40 @@ namespace SpAnalyzerTool
                          WHERE is_ms_shipped = 0
                            AND ep.name IS NULL
         ", conn))
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        procedures.Add(reader.GetString(0));
+                        while (await reader.ReadAsync())
+                        {
+                            procedures.Add(reader.GetString(0));
+                        }
                     }
                 }
-            }
 
-            return procedures;
+                return procedures;
+            }
+            catch (SqlException sqlEx)
+            {
+                // معالجة أخطاء SQL بشكل específic
+                Console.WriteLine($"SQL Error: {sqlEx.Message}");
+
+                // تحقق من رقم الخطأ لمزيد من التفاصيل
+                if (sqlEx.Number == 18456) // خطأ في login
+                {
+                    Console.WriteLine("خطأ في اسم المستخدم أو كلمة المرور");
+                }
+                else if (sqlEx.Number == 4060) // قاعدة البيانات غير موجودة
+                {
+                    Console.WriteLine("قاعدة البيانات غير موجودة");
+                }
+
+                return new List<string>(); // إرجاع قائمة فارغة بدلاً من throw
+            }
+            catch (Exception ex)
+            {
+                // معالجة الأخطاء العامة
+                Console.WriteLine($"General Error: {ex.Message}");
+                return new List<string>();
+            }
 
         }
 
@@ -456,18 +486,26 @@ namespace SpAnalyzerTool
         /// <returns></returns>
         public static async Task<List<string>> GetAllTableNamesAsync(string connectionString)
         {
-            var list = new List<string>();
-            string query = "SELECT name FROM sys.tables ORDER BY name";
+            try
+            {
 
-            using var conn = new SqlConnection(connectionString);
-            await conn.OpenAsync();
-            using var cmd = new SqlCommand(query, conn);
-            using var reader = await cmd.ExecuteReaderAsync();
+                var list = new List<string>();
+                string query = "SELECT name FROM sys.tables ORDER BY name";
 
-            while (await reader.ReadAsync())
-                list.Add(reader.GetString(0));
+                using var conn = new SqlConnection(connectionString);
+                await conn.OpenAsync();
+                using var cmd = new SqlCommand(query, conn);
+                using var reader = await cmd.ExecuteReaderAsync();
 
-            return list;
+                while (await reader.ReadAsync())
+                    list.Add(reader.GetString(0));
+
+                return list;
+            }catch(Exception ex)
+            {
+                Debug.WriteLine("حدث خطأ أثناء جلب أسماء الجداول:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new List<string>();
+            }
         }
 
         /// <summary>
@@ -478,25 +516,34 @@ namespace SpAnalyzerTool
         /// <returns></returns>
         public static async Task<List<string>> GetTableColumnsAsync(string tableName,string ConnectionString)
         {
-            var columns = new List<string>();
-            using var conn = new SqlConnection(ConnectionString); 
-            await conn.OpenAsync();
+            try
+            {
 
-            string sql = $@"
+
+                var columns = new List<string>();
+                using var conn = new SqlConnection(ConnectionString);
+                await conn.OpenAsync();
+
+                string sql = $@"
         SELECT COLUMN_NAME 
         FROM INFORMATION_SCHEMA.COLUMNS 
         WHERE TABLE_NAME = @TableName";
 
-            using var cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@TableName", tableName);
+                using var cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@TableName", tableName);
 
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    columns.Add(reader.GetString(0));
+                }
+
+                return columns;
+            }catch(Exception ex)
             {
-                columns.Add(reader.GetString(0));
+                Debug.WriteLine("حدث خطأ أثناء جلب أسماء الأعمدة:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new List<string>();
             }
-
-            return columns;
         }
 
         /// <summary>

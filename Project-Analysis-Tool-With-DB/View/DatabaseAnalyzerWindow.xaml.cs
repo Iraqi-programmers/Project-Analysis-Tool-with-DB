@@ -1,24 +1,13 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Data.Sql;
+﻿using Microsoft.Data.Sql;
 using Microsoft.Data.SqlClient;
-using Newtonsoft.Json;
 using SpAnalyzerTool.Helper;
 using SpAnalyzerTool.Models;
-using SpAnalyzerTool.View.UserControl;
 using SpAnalyzerTool.ViewModel;
-using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Effects;
-using Brushes = System.Windows.Media.Brushes;
 using MessageBox = System.Windows.MessageBox;
-using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 using TextBox = System.Windows.Controls.TextBox;
 using userControl = System.Windows.Controls.UserControl;
 
@@ -663,9 +652,7 @@ namespace SpAnalyzerTool.View
 
                     cmbServers.ItemsSource = null;
                     cmbServers.Items.Clear();
-                    cmbServers.IsEditable = true;
                     cmbServers.Items.Add(builder.DataSource);
-                    cmbServers.SelectedIndex = 0;
                     txtBackupSize.Text = settings.FileSize;
 
                     LoadDatabasesForSelectedServer(null, null);
@@ -729,6 +716,8 @@ namespace SpAnalyzerTool.View
             if (string.IsNullOrWhiteSpace(cmbServers.Text))
             {
                 MessageBox.Show("يرجى اختيار أو كتابة اسم السيرفر أولاً.", "تنبيه", MessageBoxButton.OK, MessageBoxImage.Warning);
+                btnLoadDataBases.IsEnabled = true;
+
                 return;
             }
 
@@ -741,7 +730,8 @@ namespace SpAnalyzerTool.View
                 var dbList = new List<string>();
 
                 using var conn = new SqlConnection(connectionString);
-                await conn.OpenAsync(); // ✅ إذا فشل الاتصال سيقف هنا
+                await conn.OpenAsync(); 
+
 
                 using var cmd = new SqlCommand("SELECT name FROM sys.databases WHERE database_id > 4 ORDER BY name", conn);
                 using var reader = await cmd.ExecuteReaderAsync();

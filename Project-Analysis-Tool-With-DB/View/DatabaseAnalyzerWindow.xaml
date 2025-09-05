@@ -40,6 +40,7 @@
                               Style="{StaticResource StyledComboBox}"
                               Width="400"
                               IsEditable="True"
+                              SelectedIndex="0"
                               IsTextSearchEnabled="True"
                               Loaded="cmbServers_Loaded"/>
 
