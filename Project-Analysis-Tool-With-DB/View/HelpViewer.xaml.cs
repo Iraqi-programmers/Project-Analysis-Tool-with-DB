@@ -64,7 +64,7 @@ namespace SpAnalyzerTool.View
             stackPanelContent.Children.Add(contactHeader);
 
             // 4. تفاصيل الاتصال
-            foreach (var detail in helpContent.Contact.Details!)
+            foreach (var detail in helpContent?.Contact?.Details!)
             {
                 var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 5) };
 

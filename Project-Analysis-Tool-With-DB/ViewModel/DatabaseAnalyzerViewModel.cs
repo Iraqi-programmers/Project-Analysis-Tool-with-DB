@@ -57,7 +57,7 @@ namespace SpAnalyzerTool.ViewModel
         public void AddNewProceduerEditor()
         {
            
-            var editor = new UC_ProcedureEditor(settings.DefaultConnectionString);
+            var editor = new UC_ProcedureEditor(settings?.DefaultConnectionString);
                
 
             editor.ExitRequested += (_, _) => ShowOverlayAction?.Invoke(null);
@@ -72,8 +72,8 @@ namespace SpAnalyzerTool.ViewModel
         [RelayCommand]
         public void EditProcedureEditor()
         {
-            if (!clsDatabaseHelper.TryValidateConnection(settings.DefaultConnectionString??string.Empty) ||
-                string.IsNullOrEmpty(settings.DefaultConnectionString))
+            if (!clsDatabaseHelper.TryValidateConnection(settings?.DefaultConnectionString??string.Empty) ||
+                string.IsNullOrEmpty(settings?.DefaultConnectionString))
             {
                 MessageBox.Show("يرجى إدخال جملة الاتصال بقاعدة البيانات.", "خطأ", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;

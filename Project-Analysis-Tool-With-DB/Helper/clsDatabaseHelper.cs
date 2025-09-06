@@ -568,6 +568,7 @@ namespace SpAnalyzerTool
             }
             catch (Exception ex)
             {
+                Debug.WriteLine("فشل الاتصال بقاعدة البيانات:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }

@@ -139,7 +139,7 @@ namespace SpAnalyzerTool.Helper
             var caretOffset = _textArea.Caret.Offset;
             var word = GetCurrentWord();
             _textArea.Document.Replace(caretOffset - word.Length, word.Length, suggestion);
-            _popup.IsOpen = false;
+            _popup!.IsOpen = false;
         }
 
         private string GetCurrentWord()
@@ -222,11 +222,11 @@ namespace SpAnalyzerTool.Helper
             if (matches.Count > 0)
             {
                 _suggestionList.SelectedIndex = 0;
-                _popup.IsOpen = true;
+                _popup!.IsOpen = true;
             }
             else
             {
-                _popup.IsOpen = false;
+                _popup!.IsOpen = false;
             }
         }
 
@@ -236,7 +236,7 @@ namespace SpAnalyzerTool.Helper
         private void CloseTimer_Tick(object? sender, EventArgs e)
         {
             _closeTimer?.Stop();
-            _popup.IsOpen = false;
+            _popup!.IsOpen = false;
             _textArea.Focus();
         }
 
@@ -245,7 +245,7 @@ namespace SpAnalyzerTool.Helper
             if ((e.Key == Key.Enter || e.Key == Key.Tab) && _suggestionList.SelectedItem is string selected)
             {
                 InsertSuggestion(selected);
-                _popup.IsOpen = false;
+                _popup!.IsOpen = false;
                 e.Handled = true;
 
                 // إعادة التركيز إلى TextEditor بعد الإدراج
@@ -300,7 +300,7 @@ namespace SpAnalyzerTool.Helper
 
         private void TextArea_PreviewKeyDown(object? sender, KeyEventArgs e)
         {
-            if (!_popup.IsOpen && e.Key != Key.Back && e.Key != Key.Delete)
+            if (!_popup!.IsOpen && e.Key != Key.Back && e.Key != Key.Delete)
                 return;
 
             switch (e.Key)

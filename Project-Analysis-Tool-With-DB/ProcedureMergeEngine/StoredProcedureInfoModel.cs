@@ -56,9 +56,5 @@ namespace SpAnalyzerTool.ProcedureMergeEngine
             IsExcluded = false;
         }
 
-        public StoredProcedureInfo()
-        {
-            
-        }
     }
 }

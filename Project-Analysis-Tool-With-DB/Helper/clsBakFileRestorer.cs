@@ -73,8 +73,8 @@ namespace SpAnalyzerTool.Helper
             await conn.OpenAsync();
 
             // 2. استخراج أسماء الملفات داخل الباك أب (logical names)
-            string logicalMdfName = null;
-            string logicalLdfName = null;
+            string? logicalMdfName = null;
+            string? logicalLdfName = null;
 
             using (var fileListCmd = new SqlCommand($"RESTORE FILELISTONLY FROM DISK = N'{bakFullPath}'", conn))
             using (var reader = await fileListCmd.ExecuteReaderAsync())

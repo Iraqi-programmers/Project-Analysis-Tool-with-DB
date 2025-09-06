@@ -7,7 +7,7 @@ namespace SpAnalyzerTool.Helper
 {
     public static class clsSqlErrorFixSuggester
     {
-        private static Dictionary<string, string> _knownWords;
+        private static Dictionary<string, string>? _knownWords;
 
         public static void LoadSuggestionsFromJson(string jsonPath)
         {
@@ -48,7 +48,7 @@ namespace SpAnalyzerTool.Helper
                 .Distinct(StringComparer.OrdinalIgnoreCase);
 
             var unknown = foundTables
-                .Where(name => !_knownWords.TryGetValue(name, out string type) || type != "Table")
+                .Where(name => !_knownWords.TryGetValue(name, out string? type) || type != "Table")
                 .ToList();
 
             return unknown;

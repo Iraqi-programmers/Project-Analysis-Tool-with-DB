@@ -25,23 +25,23 @@ namespace SpAnalyzerTool.Models
 
     public class ContactDetail
     {
-        public string Icon { get; set; }
-        public string Text { get; set; }
-        public string Link { get; set; } // رابط قابل للنقر
+        public string? Icon { get; set; }
+        public string? Text { get; set; }
+        public string? Link { get; set; } // رابط قابل للنقر
     }
 
     public class ContactInfo
     {
-        public string Title { get; set; }
-        public List<ContactDetail> Details { get; set; }
+        public string? Title { get; set; }
+        public List<ContactDetail>? Details { get; set; }
     }
 
     public class HelpContentModel
     {
-        public string Title { get; set; }
-        public string Version { get; set; }
-        public List<HelpItem> Items { get; set; }
-        public ContactInfo Contact { get; set; }
+        public string? Title { get; set; }
+        public string? Version { get; set; }
+        public List<HelpItem>? Items { get; set; }
+        public ContactInfo? Contact { get; set; }
     }
 
 

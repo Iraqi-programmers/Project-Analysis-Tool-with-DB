@@ -17,7 +17,7 @@ namespace SpAnalyzerTool.View.UserControl
         private clsAutoCompleteProvider? _autoComplete;
         private  string? ConnectionString;
 
-        public UC_ProcedureEditor(string connectionString,string? procedureName=null)
+        public UC_ProcedureEditor(string? connectionString,string? procedureName=null)
         {
             InitializeComponent();
             ConnectionString = connectionString;

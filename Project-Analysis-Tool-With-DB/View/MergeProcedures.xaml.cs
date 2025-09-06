@@ -13,8 +13,7 @@ namespace SpAnalyzerTool.View
     public partial class MergeProcedures : Window
     {
 
-        private List<StoredProcedureInfo> mergedList;
-        private StoredProcedureInfo spInfo;
+        private List<StoredProcedureInfo>? mergedList;
 
         public MergeProcedures()
         {

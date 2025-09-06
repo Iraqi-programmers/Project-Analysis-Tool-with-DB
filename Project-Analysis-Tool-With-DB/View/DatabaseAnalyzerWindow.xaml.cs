@@ -622,7 +622,7 @@ namespace SpAnalyzerTool.View
 
     public partial class DatabaseAnalyzerWindow : Window
     {
-        private readonly AppSettings settings;
+        private readonly AppSettings? settings;
         private  List<string> _extractedProcedures = new();
         private  List<string> _UnusedProcedures = new();
         private  DatabaseAnalyzerViewModel vm;
@@ -643,7 +643,7 @@ namespace SpAnalyzerTool.View
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
 
-            if (!string.IsNullOrWhiteSpace(settings.DefaultConnectionString))
+            if (!string.IsNullOrWhiteSpace(settings?.DefaultConnectionString))
             {
                 try
                 {
@@ -655,7 +655,7 @@ namespace SpAnalyzerTool.View
                     cmbServers.Items.Add(builder.DataSource);
                     txtBackupSize.Text = settings.FileSize;
 
-                    LoadDatabasesForSelectedServer(null, null);
+                    LoadDatabasesForSelectedServer(sender, e);
                 }
                 catch { }
             }
@@ -691,7 +691,7 @@ namespace SpAnalyzerTool.View
             cmbDatabases.Text = string.Empty;
             cmbDatabases.IsEnabled = false;
 
-            settings.DefaultConnectionString = string.Empty;
+            settings!.DefaultConnectionString= string.Empty;
             SettingsHelper.Save("SettingesFiles\\appsettings.json", settings);
 
 
@@ -762,7 +762,7 @@ namespace SpAnalyzerTool.View
                         connectionString = builder.ConnectionString;
                     }
 
-                    settings.DefaultConnectionString = connectionString;
+                    settings!.DefaultConnectionString = connectionString;
                     settings.FileSize = await clsDatabaseHelper.GetDatabaseSizeAsync(connectionString);
                     txtBackupSize.Text = settings.FileSize;
                     SettingsHelper.Save("SettingesFiles\\appsettings.json", settings);
@@ -856,7 +856,7 @@ namespace SpAnalyzerTool.View
         private async void Analyze_Click(object sender, RoutedEventArgs e)
         {
 
-            if (!clsDatabaseHelper.TryValidateConnection(settings.DefaultConnectionString) || string.IsNullOrEmpty(settings.DefaultConnectionString))
+            if (!clsDatabaseHelper.TryValidateConnection(settings?.DefaultConnectionString!) || string.IsNullOrEmpty(settings?.DefaultConnectionString))
             {
                 MessageBox.Show("يرجى إدخال جملة الاتصال بقاعدة البيانات.", "خطأ", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -964,12 +964,12 @@ namespace SpAnalyzerTool.View
             }
 
             // ✅ الإجراءات التي تم تحديدها يدوياً للحذف
-            var selectedToDelete = vm.ObProject
+            var selectedToDelete = vm?.ObProject?
                 .Where(p => p.IsSelectedForDelete)
                 .Select(p => p.Procedure)
                 .ToList();
 
-            if (selectedToDelete.Count == 0)
+            if (selectedToDelete?.Count == 0)
             {
                 MessageBox.Show("لم يتم تحديد أي إجراء للحذف.", "تنبيه", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -978,8 +978,8 @@ namespace SpAnalyzerTool.View
 
             // ✅ رسالة تأكيد مخصصة حسب وجود غير مستخدمة أو لا
             string warningMessage = _UnusedProcedures.Count == 0
-                ? $"⚠️ لا توجد إجراءات غير مستخدمة.\nهل ترغب بحذف الإجراءات المحددة ({selectedToDelete.Count})؟"
-                : $"⚠️ سيتم حذف {selectedToDelete.Count} إجراء تم تحديده.\nهل ترغب بتنفيذ الحذف على قاعدة البيانات الأصلية؟";
+                ? $"⚠️ لا توجد إجراءات غير مستخدمة.\nهل ترغب بحذف الإجراءات المحددة ({selectedToDelete?.Count})؟"
+                : $"⚠️ سيتم حذف {selectedToDelete?.Count} إجراء تم تحديده.\nهل ترغب بتنفيذ الحذف على قاعدة البيانات الأصلية؟";
 
             var confirmDelete = MessageBox.Show(
                   warningMessage,
@@ -994,7 +994,7 @@ namespace SpAnalyzerTool.View
             if (confirmDelete != MessageBoxResult.Yes)
                 return;
 
-            string? connectionString = settings.DefaultConnectionString;
+            string? connectionString = settings?.DefaultConnectionString;
 
             // نسخ احتياطي؟
             var backupConfirm = MessageBox.Show(
@@ -1046,7 +1046,7 @@ namespace SpAnalyzerTool.View
             await mainConn.OpenAsync();
 
 
-            foreach (var proc in selectedToDelete)
+            foreach (var proc in selectedToDelete!)
             {
                 try
                 {
@@ -1074,26 +1074,29 @@ namespace SpAnalyzerTool.View
         {
             if (cmbDatabases.SelectedItem is string selectedDb)
             {
+                string? oldConnStr = null;
+
+                if (!string.IsNullOrEmpty(settings?.DefaultConnectionString))
+                    oldConnStr = settings.defaultConnectionString ?? string.Empty;
 
                 // تحديث الاتصال
-                string oldConnStr = settings.defaultConnectionString;
                 var builder = new SqlConnectionStringBuilder(oldConnStr)
                 {
                     InitialCatalog = selectedDb
                 };
                 
-                string newConnStr = builder.ToString();
-
-                settings.defaultConnectionString = newConnStr;
+                string? newConnStr = builder.ToString();
+                if (newConnStr != null)
+                    settings.defaultConnectionString = newConnStr;
 
                 //حفظ الاتصال الجديد
                 SettingsHelper.Save("SettingesFiles\\appsettings.json", settings);
 
 
                 if (!string.IsNullOrEmpty(vm.ProjectPath))
-                    Analyze_Click(null, null);
+                    Analyze_Click(sender, e);
 
-                await clsAutoCompleteProvider.UpdateAutoCompleteJsonAsync(newConnStr);
+                await clsAutoCompleteProvider.UpdateAutoCompleteJsonAsync(newConnStr??string.Empty);
 
                
             }

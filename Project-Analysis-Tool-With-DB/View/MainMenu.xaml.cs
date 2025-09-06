@@ -17,22 +17,22 @@ namespace SpAnalyzerTool
         private void DatabaseMode_Click(object sender, RoutedEventArgs e)
         {
             var dbWindow = new DatabaseAnalyzerWindow();
-            dbWindow.Show();
-            this.Close();
+            dbWindow.ShowDialog();
         }
 
         private void BackupMode_Click(object sender, RoutedEventArgs e)
         {
             var backupWindow = new BackupAnalyzerWindow();
-            backupWindow.Show();
-            this.Close();
+            backupWindow.ShowDialog();
+            
         }
 
         private void OpenMergePage_Click(object sender, RoutedEventArgs e)
         {
+            System.Windows.MessageBox.Show("This feature is under development. Please check back later.", "Under Development", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
             var mergeWindow = new MergeProcedures();
             mergeWindow.ShowDialog();
-         //  this.Content=  mergeWindow.NavigationService;
         }
 
         private void ShowHelp_Click(object sender, RoutedEventArgs e)
