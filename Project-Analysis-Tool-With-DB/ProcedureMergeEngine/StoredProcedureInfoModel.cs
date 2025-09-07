@@ -40,6 +40,11 @@ namespace SpAnalyzerTool.ProcedureMergeEngine
         [ObservableProperty]
         public bool isExcluded;
 
+        [ObservableProperty]
+        public string? _SourceColor; // إضافة خاصية اللون
+
+
+
         /// <summary>
         /// ينشئ كائن StoredProcedureInfo جديد.
         /// </summary>
@@ -47,13 +52,15 @@ namespace SpAnalyzerTool.ProcedureMergeEngine
         /// <param name="definition">نص التعريف الكامل</param>
         /// <param name="outputColumns">أسماء الأعمدة الناتجة</param>
         /// <param name="sourceDatabase">اسم قاعدة المصدر</param>
-        public StoredProcedureInfo(string name, string definition, IEnumerable<string> outputColumns, string sourceDatabase)
+        /// <param name="SourceColor"> لون الاجراء</param>
+        public StoredProcedureInfo(string name, string definition, IEnumerable<string> outputColumns, string sourceDatabase, string? sourceColor=null)
         {
             Name = name;
             Definition = definition;
             OutputColumnNames = new HashSet<string>(outputColumns, StringComparer.OrdinalIgnoreCase);
             SourceDatabase = sourceDatabase;
             IsExcluded = false;
+            _SourceColor = sourceColor;
         }
 
     }

@@ -1,10 +1,17 @@
 ﻿using SpAnalyzerTool.Helper;
 using SpAnalyzerTool.ProcedureMergeEngine;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Media;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
 using MessageBox = System.Windows.MessageBox;
+using Orientation = System.Windows.Controls.Orientation;
 
 
 namespace SpAnalyzerTool.View
@@ -57,6 +64,19 @@ namespace SpAnalyzerTool.View
                 return;
             }
 
+
+            if(mergedList?.Count>0)
+            {
+                mergedList.Clear();
+                ListBoxLeft.ItemsSource = null;
+                ListBoxRight.ItemsSource = null;
+                MergedList.ItemsSource = null;
+                grdBakResult.Visibility = Visibility.Collapsed;
+                grbResult.Visibility = Visibility.Collapsed;
+                btnSave.Visibility = Visibility.Collapsed;
+                stNewBakName.Visibility = Visibility.Collapsed;
+
+            }
             try
             {
                 txtSummary.Text = "⏳ جاري تحليل ودمج الإجراءات...";
@@ -79,9 +99,6 @@ namespace SpAnalyzerTool.View
                 var procs2 = await clsDatabaseHelper.LoadAllStoredProceduresAsync(connStr2, db2);
 
 
-
-
-
                 //3. التحقق من ان ملفي الباك اب من نفس البيئة
                 List<string> tableDiffs;
                 if (!ProcedureComparer.AreTableSetsCompatible(procs1, procs2, out tableDiffs))
@@ -100,12 +117,15 @@ namespace SpAnalyzerTool.View
                 // 4. دمج الإجراءات
                 mergedList = StoredProcedureMerger.MergeProcedures(procs1, procs2);
 
+                MessageBox.Show($"{procs1.Count}عدد الاجرءات في الملف الاول");
+                MessageBox.Show($"{procs2.Count}عدد الاجرءات في الملف الثاني");
+
                 // 5. عرض النتائج في القوائم الثلاثة
                 ListBoxLeft.ItemsSource = procs1;
                 ListBoxRight.ItemsSource = procs2;
                 MergedList.ItemsSource = mergedList;
 
-                txtSummary.Text = $"✅ تم الدمج بنجاح.\n📂 من: {db1} و {db2}\n🔢 عدد الإجراءات المدمجة: {mergedList.Count}";
+                txtSummary.Text = $"✅ تم الدمج بنجاح.\n🔢 عدد الإجراءات المدمجة: {mergedList.Count}";
             }
             catch (Exception ex)
             {
@@ -163,5 +183,31 @@ namespace SpAnalyzerTool.View
             }
         }
 
+
+    }
+
+    public class SourceToColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is StoredProcedureInfo procInfo)
+            {
+                // لون الملف الأول: أصفر
+                if (procInfo.SourceDatabase.Contains("TempMergeDb1_"))
+                    return new SolidColorBrush(Colors.DarkGray);
+
+                // لون الملف الثاني: أخضر
+                else if (procInfo.SourceDatabase.Contains("TempMergeDb2_"))
+                    return new SolidColorBrush(Colors.WhiteSmoke);
+            }
+
+            // لون افتراضي
+            return new SolidColorBrush(Colors.White);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

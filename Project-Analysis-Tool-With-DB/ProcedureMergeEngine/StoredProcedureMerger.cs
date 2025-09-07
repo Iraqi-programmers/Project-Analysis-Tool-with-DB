@@ -32,19 +32,56 @@ namespace SpAnalyzerTool.ProcedureMergeEngine
             return merged;
         }
 
-        public static List<StoredProcedureInfo> MergeProcedures(List<StoredProcedureInfo> list1, List<StoredProcedureInfo> list2)
+        //public static List<StoredProcedureInfo> MergeProcedures(List<StoredProcedureInfo> list1, List<StoredProcedureInfo> list2)
+        //{
+        //    if (list1 == null) list1 = new List<StoredProcedureInfo>();
+        //    if (list2 == null) list2 = new List<StoredProcedureInfo>();
+
+        //    // دمج القائمتين وإزالة التكرار حسب الاسم (أو المعرف الفريد)
+        //    var merged = list1
+        //        .Concat(list2)
+        //        .GroupBy(sp => sp.Name, StringComparer.OrdinalIgnoreCase)
+        //        .Select(g => g.First())
+        //        .ToList();
+
+        //    return merged;
+        //}
+
+
+        public static List<StoredProcedureInfo> MergeProcedures(List<StoredProcedureInfo> procs1, List<StoredProcedureInfo> procs2)
         {
-            if (list1 == null) list1 = new List<StoredProcedureInfo>();
-            if (list2 == null) list2 = new List<StoredProcedureInfo>();
+            var mergedList = new List<StoredProcedureInfo>();
 
-            // دمج القائمتين وإزالة التكرار حسب الاسم (أو المعرف الفريد)
-            var merged = list1
-                .Concat(list2)
-                .GroupBy(sp => sp.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(g => g.First())
-                .ToList();
+            // 1. إضافة جميع إجراءات الملف الأول (أصفر)
+            foreach (var proc in procs1)
+            {
+                // نسخ الإجراء مع الحفاظ على المصدر الأصلي
+                var newProc = new StoredProcedureInfo(proc.Name, proc.Definition, proc.OutputColumnNames, proc.SourceDatabase);
+                mergedList.Add(newProc);
+            }
 
-            return merged;
+            // 2. إضافة إجراءات الملف الثاني (أخضر) التي ليست في الملف الأول
+            foreach (var proc in procs2)
+            {
+                var existingProc = mergedList.FirstOrDefault(p =>
+                    p.Name.Equals(proc.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (existingProc == null)
+                {
+                    // إذا كان الإجراء غير موجود في الملف الأول، نضيفه من الملف الثاني
+                    var newProc = new StoredProcedureInfo(proc.Name, proc.Definition, proc.OutputColumnNames, proc.SourceDatabase);
+                    mergedList.Add(newProc);
+                }
+                else
+                {
+                    // إذا كان الإجراء موجوداً في الملف الأول، نستبدله ولكن نحافظ على لون الملف الأول
+                    // (لا نغير SourceDatabase ليبقى اللون أصفر)
+                    existingProc.Definition = proc.Definition;
+                    existingProc.OutputColumnNames = proc.OutputColumnNames;
+                }
+            }
+
+            return mergedList;
         }
     }
 }

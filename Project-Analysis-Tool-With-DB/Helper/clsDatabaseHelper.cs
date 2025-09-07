@@ -420,8 +420,6 @@ namespace SpAnalyzerTool
                 return $"⚠️ حدث خطأ أثناء المعالجة:\n{ex.Message}";
             }
         }
-
-
         private static string RemoveSqlComments(string sql)
         {
             // إزالة التعليقات من نوع -- و /* */
@@ -429,6 +427,7 @@ namespace SpAnalyzerTool
             string noBlockComments = Regex.Replace(noLineComments, @"/\*.*?\*/", "", RegexOptions.Singleline);
             return noBlockComments.Trim();
         }
+
 
         public static async Task<string> LoadProcedureDefinitionAsync(string procedureName, string connectionString)
         {
@@ -598,50 +597,54 @@ namespace SpAnalyzerTool
             return string.Join(Environment.NewLine, lines);
         }
 
-
-
         public static async Task<List<StoredProcedureInfo>> LoadAllStoredProceduresAsync(string connectionString, string sourceDatabase)
         {
-            var procedures = new List<StoredProcedureInfo>();
+            try
+            {
+                var procedures = new List<StoredProcedureInfo>();
 
-            using SqlConnection conn = new(connectionString);
-            await conn.OpenAsync();
+                using SqlConnection conn = new(connectionString);
 
-            // الخطوة 1: جلب أسماء جميع الإجراءات في قاعدة البيانات
-            var cmdText = @"
+                conn.ConnectionString += ";Connect Timeout=30;";
+
+                await conn.OpenAsync();
+
+                // الخطوة 1: جلب أسماء جميع الإجراءات في قاعدة البيانات
+                var cmdText = @"
         SELECT SPECIFIC_NAME
         FROM INFORMATION_SCHEMA.ROUTINES
         WHERE ROUTINE_TYPE = 'PROCEDURE'";
 
-            using SqlCommand cmd = new(cmdText, conn);
-            using var reader = await cmd.ExecuteReaderAsync();
+                using SqlCommand cmd = new(cmdText, conn);
+                using var reader = await cmd.ExecuteReaderAsync();
 
-            var procedureNames = new List<string>();
+                var procedureNames = new List<string>();
 
-            while (await reader.ReadAsync())
+                while (await reader.ReadAsync())
+                {
+                    procedureNames.Add(reader.GetString(0));
+                }
+
+                reader.Close();
+
+                // الخطوة 2: جلب التعريف الكامل لكل إجراء
+                foreach (var procName in procedureNames)
+                {
+                    string definition = await LoadProcedureDefinitionAsync(procName, connectionString);
+
+                    // يمكنك لاحقًا استخراج الأعمدة المرجعة لو أردت
+                    var outputColumns = new HashSet<string>(); // فارغة مؤقتًا
+
+                    procedures.Add(new StoredProcedureInfo(procName, definition, outputColumns, sourceDatabase));
+                }
+
+                return procedures;
+            }catch(Exception ex)
             {
-                procedureNames.Add(reader.GetString(0));
+                Debug.WriteLine("حدث خطأ أثناء جلب الإجراءات:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new List<StoredProcedureInfo>();
             }
-
-            reader.Close();
-
-            // الخطوة 2: جلب التعريف الكامل لكل إجراء
-            foreach (var procName in procedureNames)
-            {
-                string definition = await LoadProcedureDefinitionAsync(procName, connectionString);
-
-                // يمكنك لاحقًا استخراج الأعمدة المرجعة لو أردت
-                var outputColumns = new HashSet<string>(); // فارغة مؤقتًا
-
-                procedures.Add(new StoredProcedureInfo(procName, definition, outputColumns, sourceDatabase));
-            }
-
-            return procedures;
         }
-
-
-
-
 
     }
 }

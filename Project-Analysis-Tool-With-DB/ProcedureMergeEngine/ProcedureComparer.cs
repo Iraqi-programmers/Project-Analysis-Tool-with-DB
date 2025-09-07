@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace SpAnalyzerTool.ProcedureMergeEngine
 {
@@ -64,39 +59,94 @@ namespace SpAnalyzerTool.ProcedureMergeEngine
         {
             return new HashSet<string>(columnNames, StringComparer.OrdinalIgnoreCase);
         }
+        public static bool AreTableSetsCompatible(List<StoredProcedureInfo> list1, List<StoredProcedureInfo> list2, out List<string> diff)
+        {
+            var tables1 = list1.SelectMany(p => ExtractTableNames(p.Definition))
+                              .Where(t => !string.IsNullOrWhiteSpace(t))
+                              .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var tables2 = list2.SelectMany(p => ExtractTableNames(p.Definition))
+                              .Where(t => !string.IsNullOrWhiteSpace(t))
+                              .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // العثور على الاختلافات في كلا الاتجاهين
+            var diff1 = tables1.Except(tables2, StringComparer.OrdinalIgnoreCase).ToList();
+            var diff2 = tables2.Except(tables1, StringComparer.OrdinalIgnoreCase).ToList();
+
+            diff = diff1.Concat(diff2).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+            return diff.Count == 0;
+        }
+
+        private static readonly HashSet<string> _systemTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            // جداول النظام الشائعة
+            "sys.tables", "sys.objects", "sys.columns", "sys.types", "sys.parameters",
+            "sys.sql_modules", "sys.indexes", "sys.foreign_keys", "sys.key_constraints",
+            "sys.views", "sys.procedures", "sys.schemas", "sys.databases", "sys.configurations",
+            "sys.servers", "sys.linked_logins", "sys.credentials", "sys.filegroups", "sys.partitions",
+            "sys.allocation_units", "sys.computed_columns", "sys.identity_columns", "sys.default_constraints",
+            
+            // معلومات schema
+            "information_schema.tables", "information_schema.columns", "information_schema.views",
+            "information_schema.routines", "information_schema.table_constraints",
+            
+            // Dynamic Management Views/Functions
+            "sys.dm_", "sys.dm_db_", "sys.dm_exec_", "sys.dm_io_", "sys.dm_tran_",
+            
+            // جداول نظام أخرى
+            "msdb.dbo.sysjobs", "msdb.dbo.sysjobhistory", "msdb.dbo.syscategories"
+        };
 
         private static HashSet<string> ExtractTableNames(string procedureDefinition)
         {
             var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // هذه التعبيرات تبحث عن FROM و JOIN و INTO وغيرها
-            var regex = new Regex(@"\b(?:FROM|JOIN|INTO|UPDATE|INSERT\s+INTO|DELETE\s+FROM)\s+(\[?\w+\]?(?:\.\[?\w+\]?)?)", RegexOptions.IgnoreCase);
+            var regex = new Regex(@"\b(?:FROM|JOIN|INTO|UPDATE|INSERT\s+INTO|DELETE\s+FROM)\s+(?:#?#?\[?[\w@$#]+]?\.)?    # Schema name (optional)
+        \[?([\w@$#]+)]?             # Table name (captured)
+        (?:\s+(?:AS\s+)?\[?[\w@$#]+]?)?  # Alias (ignored)
+        ", RegexOptions.IgnoreCase | RegexOptions.Compiled );
 
-            var matches = regex.Matches(procedureDefinition);
+            
+
+                        var matches = regex.Matches(procedureDefinition);
             foreach (Match match in matches)
             {
-                if (match.Groups.Count > 1)
+                if (match.Groups.Count > 1 && !string.IsNullOrWhiteSpace(match.Groups[1].Value))
                 {
-                    tableNames.Add(match.Groups[1].Value.Trim());
+                    string tableName = match.Groups[1].Value.Trim();
+
+                    // استبعاد الجداول المؤقتة وجداول النظام
+                    if (!IsSystemOrTempTable(tableName))
+                    {
+                        tableNames.Add(tableName);
+                    }
                 }
             }
 
             return tableNames;
         }
 
-        public static bool AreTableSetsCompatible(List<StoredProcedureInfo> list1, List<StoredProcedureInfo> list2, out List<string> diff)
+        private static bool IsSystemOrTempTable(string tableName)
         {
-            var tables1 = list1.SelectMany(p => ExtractTableNames(p.Definition)).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var tables2 = list2.SelectMany(p => ExtractTableNames(p.Definition)).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            // استبعاد الجداول المؤقتة المحلية والعامة
+            if (tableName.StartsWith("#") || tableName.StartsWith("##"))
+                return true;
 
-            diff = tables1
-                .Union(tables2)
-                .Where(t => !tables1.Contains(t) || !tables2.Contains(t))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            // استبعاد جداول النظام المعروفة
+            if (_systemTables.Contains(tableName))
+                return true;
 
-            return diff.Count == 0;
+            // استبعاد الجداول التي تبدأ ببادئات النظام
+            if (tableName.StartsWith("sys.", StringComparison.OrdinalIgnoreCase) ||
+                tableName.StartsWith("information_schema.", StringComparison.OrdinalIgnoreCase) ||
+                tableName.StartsWith("dm_", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return false;
         }
+
 
     }
 }

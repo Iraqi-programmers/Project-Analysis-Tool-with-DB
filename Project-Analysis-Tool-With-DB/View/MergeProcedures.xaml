@@ -22,13 +22,14 @@
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="BorderBrush" Value="DarkGreen"/>
         </Style>
-        
+
+        <local:SourceToColorConverter x:Key="SourceColorConverter"/>
+
+
     </Window.Resources>
     
     <ScrollViewer>
         <StackPanel Margin="20" Orientation="Vertical" >
-
-          
 
             <!-- اختيار ملفات الباك -->
             <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Center">
@@ -56,36 +57,48 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- من bak 1 -->
                 <GroupBox Header="📁 الملف الاول" Grid.Column="0" Margin="5">
-                    <ListBox x:Name="ListBoxLeft" DisplayMemberPath="Name" Height="200" BorderThickness="0"/>
+                    <ListBox x:Name="ListBoxLeft" Height="200" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" 
+                               Background="{Binding Converter={StaticResource SourceColorConverter}}"
+                               Padding="5" Margin="2"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </GroupBox>
 
                 <!-- من bak 2 -->
                 <GroupBox Header="📁 الملف الثاني" Grid.Column="1" Margin="5">
-                    <ListBox x:Name="ListBoxRight" DisplayMemberPath="Name" Height="200" BorderThickness="0"/>
+                    <ListBox x:Name="ListBoxRight" Height="200" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" 
+                               Background="{Binding Converter={StaticResource SourceColorConverter}}"
+                               Padding="5" Margin="2"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </GroupBox>
             </Grid>
 
             <!-- الإجراءات المدموجة -->
-            <GroupBox Header="🧪 الإجراءات بعد الدمج" Margin="0,0,0,10" x:Name="grbResult" Visibility="Collapsed" >
-                <ListView x:Name="MergedList" Height="200" BorderThickness="0">
-                    <ListView.ItemTemplate>
+            <GroupBox Header="🧪 الإجراءات بعد الدمج" Grid.Column="2" Margin="5" Visibility="Collapsed" x:Name="grbResult">
+                <ListBox x:Name="MergedList" Height="200" BorderThickness="0">
+                    <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsChecked="{Binding IsExcluded}" Margin="5"/>
-                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="5,0"/>
-                                <TextBlock Text=" (من: " Foreground="Gray"/>
-                                <TextBlock Text="{Binding SourceDatabase}" Foreground="Gray"/>
-                                <TextBlock Text=")" Foreground="Gray"/>
+                                <CheckBox IsChecked="{Binding IsExcluded}" Margin="5" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Name}" 
+                                   Background="{Binding Converter={StaticResource SourceColorConverter}}"
+                                   Padding="5" Margin="2" VerticalAlignment="Center"/>
                             </StackPanel>
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </GroupBox>
 
-           
-            <!-- اسم الباك الجديد -->
             <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Right" Visibility="Collapsed" x:Name="stNewBakName">
                 <TextBox x:Name="txtOutputBakName" Width="300" Text="MergedOutput.bak" Height="30"/>
                 <TextBlock Text="📦 : اسم ملف النتائج" Width="160" Margin="20,0,-35,0"  />
