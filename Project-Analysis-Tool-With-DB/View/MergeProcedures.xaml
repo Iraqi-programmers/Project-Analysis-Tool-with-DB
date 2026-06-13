@@ -8,6 +8,8 @@
         Title="📂 .bak دمج الاجراءات من ملفي"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
+       Foreground="{StaticResource TextBrush}"
+       Background="{StaticResource BackgroundBrush}"
        Height="750" Width="850">
 
     <Window.Resources>
@@ -17,10 +19,9 @@
             <Setter Property="FontSize" Value="14" />
         </Style>
 
-        <Style TargetType="GroupBox" >
+        <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="BorderBrush" Value="DarkGreen"/>
         </Style>
 
         <local:SourceToColorConverter x:Key="SourceColorConverter"/>
@@ -111,7 +112,7 @@
                  Click="SaveMergedProcedures_Click"/>
 
             <!-- ملخص -->
-            <TextBlock x:Name="txtSummary" FontSize="14" Foreground="#444" Margin="0,10"/>
+            <TextBlock x:Name="txtSummary" FontSize="14" Foreground="{StaticResource TextMutedBrush}" Margin="0,10"/>
        
         </StackPanel>
     </ScrollViewer>

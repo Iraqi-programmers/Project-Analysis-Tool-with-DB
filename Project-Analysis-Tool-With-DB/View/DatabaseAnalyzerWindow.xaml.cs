@@ -261,7 +261,7 @@ namespace SpAnalyzerTool.View
     //                settings.DefaultConnectionString = connectionString;
     //                settings.FileSize = await clsDatabaseHelper.GetDatabaseSizeAsync(connectionString);
     //                txtBackupSize.Text = settings.FileSize;
-    //                SettingsHelper.Save("SettingesFiles\\appsettings.json", settings);
+    //                AppSettingsService.Save(settings);
 
     //                await clsAutoCompleteProvider.UpdateAutoCompleteJsonAsync(connectionString);
 
@@ -631,7 +631,7 @@ namespace SpAnalyzerTool.View
         {
             InitializeComponent();
 
-            settings = SettingsHelper.Load<AppSettings>("SettingesFiles\\appsettings.json");
+            settings = AppSettingsService.Load();
             
             vm = new DatabaseAnalyzerViewModel(settings);
             DataContext = vm;
@@ -692,7 +692,7 @@ namespace SpAnalyzerTool.View
             cmbDatabases.IsEnabled = false;
 
             settings!.DefaultConnectionString= string.Empty;
-            SettingsHelper.Save("SettingesFiles\\appsettings.json", settings);
+            AppSettingsService.Save(settings);
 
 
             await LoadAvailableSqlServersAsync();
@@ -722,7 +722,7 @@ namespace SpAnalyzerTool.View
             }
 
             string serverName = cmbServers.Text.Trim();
-            string connectionString = $"Server={serverName};Database=master;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;";
+            string connectionString = ConnectionStringFactory.Build(serverName, "master");
 
             try
             {
@@ -765,7 +765,7 @@ namespace SpAnalyzerTool.View
                     settings!.DefaultConnectionString = connectionString;
                     settings.FileSize = await clsDatabaseHelper.GetDatabaseSizeAsync(connectionString);
                     txtBackupSize.Text = settings.FileSize;
-                    SettingsHelper.Save("SettingesFiles\\appsettings.json", settings);
+                    AppSettingsService.Save(settings);
 
                     await clsAutoCompleteProvider.UpdateAutoCompleteJsonAsync(connectionString);
 
@@ -1025,10 +1025,8 @@ namespace SpAnalyzerTool.View
                         using var conn = new SqlConnection(connectionString);
                         await conn.OpenAsync();
 
-                        string dbName = conn.Database;
-                        var cmdText = $"BACKUP DATABASE [{dbName}] TO DISK = N'{backupPath}' WITH FORMAT;";
-                        var backupCmd = new SqlCommand(cmdText, conn);
-                        await backupCmd.ExecuteNonQueryAsync();
+                        // نسخ احتياطي آمن: المسار يُمرَّر كمعامل واسم القاعدة يُقتبَس داخل الخادم.
+                        await clsDatabaseHelper.BackupDatabaseAsync(backupPath, conn);
 
                         MessageBox.Show($"✅ تم حفظ النسخة الاحتياطية في: \n{backupPath}", "نجاح", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -1048,10 +1046,13 @@ namespace SpAnalyzerTool.View
 
             foreach (var proc in selectedToDelete!)
             {
+                if (string.IsNullOrWhiteSpace(proc))
+                    continue;
+
                 try
                 {
-                    var dropCmd = new SqlCommand($"IF OBJECT_ID('{proc}', 'P') IS NOT NULL DROP PROCEDURE [{proc}];", mainConn);
-                    await dropCmd.ExecuteNonQueryAsync();
+                    // حذف آمن: اسم الإجراء يُمرَّر كمعامل ويُقتبَس عبر QUOTENAME (لا دمج نصي).
+                    await clsDatabaseHelper.DropProcedureAsync(proc, mainConn);
                 }
                 catch (Exception ex)
                 {
@@ -1074,23 +1075,25 @@ namespace SpAnalyzerTool.View
         {
             if (cmbDatabases.SelectedItem is string selectedDb)
             {
+                if (settings is null)
+                    return;
+
                 string? oldConnStr = null;
 
-                if (!string.IsNullOrEmpty(settings?.DefaultConnectionString))
-                    oldConnStr = settings.defaultConnectionString ?? string.Empty;
+                if (!string.IsNullOrEmpty(settings.DefaultConnectionString))
+                    oldConnStr = settings.DefaultConnectionString;
 
                 // تحديث الاتصال
                 var builder = new SqlConnectionStringBuilder(oldConnStr)
                 {
                     InitialCatalog = selectedDb
                 };
-                
-                string? newConnStr = builder.ToString();
-                if (newConnStr != null)
-                    settings.defaultConnectionString = newConnStr;
+
+                string newConnStr = builder.ToString();
+                settings.DefaultConnectionString = newConnStr;
 
                 //حفظ الاتصال الجديد
-                SettingsHelper.Save("SettingesFiles\\appsettings.json", settings);
+                AppSettingsService.Save(settings);
 
 
                 if (!string.IsNullOrEmpty(vm.ProjectPath))

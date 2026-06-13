@@ -85,14 +85,14 @@ namespace SpAnalyzerTool.View
                 string db1 = "TempMergeDb1_" + Guid.NewGuid().ToString("N").Substring(0, 8);
                 string db2 = "TempMergeDb2_" + Guid.NewGuid().ToString("N").Substring(0, 8);
 
-                string masterConn = "Server=.;Database=master;Trusted_Connection=True;TrustServerCertificate=True;";
+                string masterConn = ConnectionStringFactory.Build(".", "master");
 
                 // 1. استعادة قواعد البيانات
                 await clsBakFileRestorer.RestoreBackupAsync(bakPath1, db1, masterConn);
                 await clsBakFileRestorer.RestoreBackupAsync(bakPath2, db2, masterConn);
 
-                string connStr1 = $"Server=.;Database={db1};Trusted_Connection=True;TrustServerCertificate=True;";
-                string connStr2 = $"Server=.;Database={db2};Trusted_Connection=True;TrustServerCertificate=True;";
+                string connStr1 = ConnectionStringFactory.Build(".", db1);
+                string connStr2 = ConnectionStringFactory.Build(".", db2);
 
                 // 2. تحميل الإجراءات من كل قاعدة
                 var procs1 = await clsDatabaseHelper.LoadAllStoredProceduresAsync(connStr1, db1);

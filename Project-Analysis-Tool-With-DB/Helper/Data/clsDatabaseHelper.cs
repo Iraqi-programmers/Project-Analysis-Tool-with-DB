@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using MessageBox = System.Windows.MessageBox;
 
-namespace SpAnalyzerTool
+namespace SpAnalyzerTool.Helper
 {
     public static class clsDatabaseHelper
     {
@@ -93,7 +93,11 @@ namespace SpAnalyzerTool
 
             foreach (var block in blocks)
             {
-                var match = Regex.Match(block, @"\bCREATE\s+PROCEDURE\s+(?:\[dbo\]\.)?\[?(\w+)\]?", RegexOptions.IgnoreCase);
+                // يدعم: CREATE / ALTER / CREATE OR ALTER، الاختصار PROC، ومخطط (schema) اختياري.
+                var match = Regex.Match(
+                    block,
+                    @"\b(?:CREATE\s+OR\s+ALTER|CREATE|ALTER)\s+PROC(?:EDURE)?\s+(?:\[?\w+\]?\.)?\[?(\w+)\]?",
+                    RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
                     var name = match.Groups[1].Value;
@@ -148,9 +152,9 @@ namespace SpAnalyzerTool
             if (!File.Exists(bakFilePath))
                 throw new FileNotFoundException("Backup file not found", bakFilePath);
 
-            string masterConnStr = $"Server={sqlInstanceName};Database=master;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;";
+            string masterConnStr = ConnectionStringFactory.Build(sqlInstanceName, "master");
             string dbName = "TempRestoreDb_" + Guid.NewGuid().ToString("N").Substring(0, 8);
-            string restoreDbConnStr = $"Server={sqlInstanceName};Database={dbName};Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;";
+            string restoreDbConnStr = ConnectionStringFactory.Build(sqlInstanceName, dbName);
 
             string dataFileLogicalName, logFileLogicalName;
             string dataFilePath, logFilePath;
@@ -471,8 +475,11 @@ namespace SpAnalyzerTool
                 int count = (int)cmd.ExecuteScalar();
                 return count > 0;
             }
-            catch
+            catch (SqlException ex)
             {
+                // فشل الاستعلام/الاتصال لا يعني بالضرورة عدم وجود الإجراء — نُسجّل السبب
+                // بدل ابتلاع الخطأ بصمت، ثم نُعيد false كقيمة آمنة افتراضية.
+                Debug.WriteLine($"تعذّر التحقق من وجود الإجراء '{procedureName}': {ex.Message}");
                 return false;
             }
         }
@@ -502,7 +509,7 @@ namespace SpAnalyzerTool
                 return list;
             }catch(Exception ex)
             {
-                Debug.WriteLine("حدث خطأ أثناء جلب أسماء الجداول:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine("حدث خطأ أثناء جلب أسماء الجداول:\n" + ex.Message);
                 return new List<string>();
             }
         }
@@ -540,7 +547,7 @@ namespace SpAnalyzerTool
                 return columns;
             }catch(Exception ex)
             {
-                Debug.WriteLine("حدث خطأ أثناء جلب أسماء الأعمدة:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine("حدث خطأ أثناء جلب أسماء الأعمدة:\n" + ex.Message);
                 return new List<string>();
             }
         }
@@ -567,7 +574,7 @@ namespace SpAnalyzerTool
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("فشل الاتصال بقاعدة البيانات:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine("فشل الاتصال بقاعدة البيانات:\n" + ex.Message);
                 return false;
             }
         }
@@ -639,11 +646,69 @@ namespace SpAnalyzerTool
                 }
 
                 return procedures;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                Debug.WriteLine("حدث خطأ أثناء جلب الإجراءات:\n" + ex.Message, "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine("حدث خطأ أثناء جلب الإجراءات:\n" + ex.Message);
                 return new List<StoredProcedureInfo>();
             }
+        }
+
+        /// <summary>
+        /// يحذف إجراءً مخزّنًا واحدًا بأمان. يُمرَّر اسم الإجراء كمعامل SQL ويُقتبَس
+        /// عبر QUOTENAME داخل الخادم، مما يمنع حقن SQL حتى لو احتوى الاسم على أحرف خاصة.
+        /// </summary>
+        /// <param name="procedureName">اسم الإجراء (يدعم schema اختياريًا مثل dbo.Name).</param>
+        /// <param name="connection">اتصال SQL مفتوح بقاعدة البيانات الهدف.</param>
+        /// <returns>مهمة تكتمل عند تنفيذ أمر الحذف.</returns>
+        /// <exception cref="ArgumentException">يُرمى إذا كان اسم الإجراء فارغًا.</exception>
+        /// <exception cref="ArgumentNullException">يُرمى إذا كان الاتصال null.</exception>
+        public static async Task DropProcedureAsync(string procedureName, SqlConnection connection)
+        {
+            if (string.IsNullOrWhiteSpace(procedureName))
+                throw new ArgumentException("اسم الإجراء مطلوب.", nameof(procedureName));
+            ArgumentNullException.ThrowIfNull(connection);
+
+            // الاسم يُمرَّر كمعامل (@proc) ولا يُدمج نصيًا أبدًا؛ QUOTENAME يقتبس المُعرّف بأمان.
+            const string sql = @"
+                IF OBJECT_ID(@proc, 'P') IS NOT NULL
+                BEGIN
+                    DECLARE @schema sysname = ISNULL(PARSENAME(@proc, 2), N'dbo');
+                    DECLARE @name   sysname = PARSENAME(@proc, 1);
+                    DECLARE @stmt   nvarchar(max) =
+                        N'DROP PROCEDURE ' + QUOTENAME(@schema) + N'.' + QUOTENAME(@name);
+                    EXEC sys.sp_executesql @stmt;
+                END";
+
+            using var cmd = new SqlCommand(sql, connection);
+            cmd.Parameters.Add("@proc", SqlDbType.NVarChar, 257).Value = procedureName;
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        /// <summary>
+        /// ينشئ نسخة احتياطية كاملة لقاعدة البيانات المتصلة إلى المسار المحدد.
+        /// مسار الملف يُمرَّر كمعامل واسم القاعدة يُقتبَس عبر QUOTENAME لمنع حقن SQL.
+        /// </summary>
+        /// <param name="backupFilePath">المسار الفيزيائي الكامل لملف ‎.bak‎.</param>
+        /// <param name="connection">اتصال SQL مفتوح بالقاعدة المراد نسخها.</param>
+        /// <returns>مهمة تكتمل عند انتهاء عملية النسخ الاحتياطي.</returns>
+        /// <exception cref="ArgumentException">يُرمى إذا كان المسار فارغًا.</exception>
+        /// <exception cref="ArgumentNullException">يُرمى إذا كان الاتصال null.</exception>
+        public static async Task BackupDatabaseAsync(string backupFilePath, SqlConnection connection)
+        {
+            if (string.IsNullOrWhiteSpace(backupFilePath))
+                throw new ArgumentException("مسار النسخة الاحتياطية مطلوب.", nameof(backupFilePath));
+            ArgumentNullException.ThrowIfNull(connection);
+
+            const string sql = @"
+                DECLARE @stmt nvarchar(max) =
+                    N'BACKUP DATABASE ' + QUOTENAME(@dbName) + N' TO DISK = @disk WITH FORMAT;';
+                EXEC sys.sp_executesql @stmt, N'@disk nvarchar(4000)', @disk = @path;";
+
+            using var cmd = new SqlCommand(sql, connection);
+            cmd.Parameters.Add("@dbName", SqlDbType.NVarChar, 128).Value = connection.Database;
+            cmd.Parameters.Add("@path", SqlDbType.NVarChar, 4000).Value = backupFilePath;
+            await cmd.ExecuteNonQueryAsync();
         }
 
     }

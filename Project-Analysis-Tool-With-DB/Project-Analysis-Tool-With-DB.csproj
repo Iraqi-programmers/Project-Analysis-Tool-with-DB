@@ -8,8 +8,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
 	  
 	<RootNamespace>Project_Analysis_Tool_With_DB</RootNamespace>
+	  
+	<ApplicationIcon>Pro.ico</ApplicationIcon>
 
   </PropertyGroup>
 
@@ -20,18 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <COMReference Include="MSXML2">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>6</VersionMajor>
-      <Guid>f5078f18-c551-11d3-89b9-0000f81fe221</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Content Include="Pro.ico" />
     <Content Include="SettingesFiles\autocomplete.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -53,6 +45,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
     <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="170.64.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.0-preview.6.25358.103" />
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
   </ItemGroup>

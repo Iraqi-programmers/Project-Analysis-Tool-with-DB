@@ -13,7 +13,7 @@ namespace SpAnalyzerTool.View
         public DeleteUnusedPrompt()
         {
             InitializeComponent();
-            var settings = SettingsHelper.Load<AppSettings>("appsettings.json");
+            var settings = AppSettingsService.Load();
             txtConnectionString.Text = settings.DefaultConnectionString;
 
         }
@@ -32,7 +32,7 @@ namespace SpAnalyzerTool.View
             {
                 DefaultConnectionString = EnteredConnectionString
             };
-            SettingsHelper.Save("appsettings.json", settings);
+            AppSettingsService.Save(settings);
 
             DialogResult = true;
             Close();

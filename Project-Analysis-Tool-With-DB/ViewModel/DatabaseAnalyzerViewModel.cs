@@ -16,7 +16,7 @@ namespace SpAnalyzerTool.ViewModel
     public partial class DatabaseAnalyzerViewModel : ObservableObject
     {
        
-        public Action<userControl>? ShowOverlayAction { get; set; }
+        public Action<userControl?>? ShowOverlayAction { get; set; }
         public Action? AnalyzeProjectAction { get; set; }
 
 

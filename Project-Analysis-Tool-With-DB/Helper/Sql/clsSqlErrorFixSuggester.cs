@@ -7,7 +7,8 @@ namespace SpAnalyzerTool.Helper
 {
     public static class clsSqlErrorFixSuggester
     {
-        private static Dictionary<string, string>? _knownWords;
+        // مُهيّأ بقاموس فارغ افتراضيًا حتى لا يكون null قبل التحميل (يمنع تحذيرات null).
+        private static Dictionary<string, string> _knownWords = new(StringComparer.OrdinalIgnoreCase);
 
         public static void LoadSuggestionsFromJson(string jsonPath)
         {

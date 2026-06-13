@@ -8,10 +8,12 @@
         Title="حـول البرنامج" 
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        Height="450" 
+        Height="450"
         Width="800"
+        Foreground="{StaticResource TextBrush}"
+        Background="{StaticResource BackgroundBrush}"
         Loaded="Window_Loaded">
-    <Border BorderBrush="#DDD" BorderThickness="1" CornerRadius="10" Padding="15" Background="White">
+    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="15" Background="{StaticResource SurfaceBrush}">
 
             <ScrollViewer>
                 <StackPanel x:Name="stackPanelContent" Margin="10">

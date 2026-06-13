@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="900">
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="900"
+             Foreground="{StaticResource TextBrush}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -19,8 +20,8 @@
         <!-- المحرر -->
         <Border CornerRadius="12"
                 BorderThickness="2"
-                BorderBrush="DarkGray"
-                Background="White"
+                BorderBrush="{StaticResource BorderBrush}"
+                Background="{StaticResource SurfaceBrush}"
                 Padding="5"
                 Margin="0,0,0,10">
             <Border.Effect>
@@ -33,7 +34,9 @@
             <avalonedit:TextEditor x:Name="SqlEditor"
                                    FontFamily="Consolas"
                                    FontSize="14"
-                                   LineNumbersForeground="DarkKhaki"
+                                   Background="#FF1B1D29"
+                                   Foreground="{StaticResource TextBrush}"
+                                   LineNumbersForeground="{StaticResource TextMutedBrush}"
                                    ShowLineNumbers="True"
                                    SyntaxHighlighting="SQL"
                                    HorizontalScrollBarVisibility="Auto"
@@ -47,8 +50,8 @@
             <Border CornerRadius="12"
                     x:Name="bordErrorSummary"
                     BorderThickness="2"
-                    BorderBrush="DarkGray"
-                    Background="White"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    Background="{StaticResource SurfaceBrush}"
                     Margin="0,0,0,-2"
                     Padding="5">
                 <Border.Effect>
@@ -69,8 +72,8 @@
             <Border CornerRadius="12"
                     x:Name="bordgv"
           BorderThickness="2"
-          BorderBrush="DarkGray"
-          Background="White"
+          BorderBrush="{StaticResource BorderBrush}"
+          Background="{StaticResource SurfaceBrush}"
           Padding="5">
                 <Border.Effect>
                     <DropShadowEffect Color="Black"

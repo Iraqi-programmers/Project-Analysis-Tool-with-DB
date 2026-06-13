@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpAnalyzerTool.View"
         mc:Ignorable="d"
-      Height="170" Width="400" Title="إدخال اتصال قاعدة البيانات" WindowStartupLocation="CenterScreen">
-        
+      Height="170" Width="400" Title="إدخال اتصال قاعدة البيانات" WindowStartupLocation="CenterScreen"
+      Foreground="{StaticResource TextBrush}" Background="{StaticResource BackgroundBrush}">
+
     <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

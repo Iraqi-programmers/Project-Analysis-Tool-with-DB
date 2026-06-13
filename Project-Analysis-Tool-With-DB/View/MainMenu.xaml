@@ -6,10 +6,11 @@
         xmlns:local="clr-namespace:SpAnalyzerTool.View"
         mc:Ignorable="d"
         Title="الرئيسية"
-        Height="400" Width="400"
+        Height="400" Width="420"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
-        Background="#F8F8F8">
+        Foreground="{StaticResource TextBrush}"
+        Background="{StaticResource BackgroundBrush}">
 
     <Window.Resources>
         <Style x:Key="StyledButton" TargetType="Button">
@@ -56,7 +57,7 @@
     </Window.Resources>
 
     <Grid>
-        <Border CornerRadius="12" Background="White" Padding="10" Margin="10" BorderBrush="#DDD" BorderThickness="1">
+        <Border CornerRadius="12" Background="{StaticResource SurfaceBrush}" Padding="10" Margin="10" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
             <Border.Effect>
                 <DropShadowEffect Color="Black"
                           Opacity="0.2"
@@ -70,7 +71,7 @@
                 <TextBlock Text="🛠️ اختر وضع التحليل"
                            FontSize="20"
                            FontWeight="Bold"
-                           Foreground="#333"
+                           Foreground="{StaticResource TextBrush}"
                            TextAlignment="Center"
                            Margin="0 0 0 30"/>
 
@@ -109,7 +110,7 @@
             </StackPanel>
 
 
-                <Button Content="❓"
+                <Button Content="?*"
         Width="30"
         Height="30"
         FontSize="16"
@@ -118,7 +119,7 @@
         ToolTip="حول البرنامج"
         HorizontalAlignment="Right"
         VerticalAlignment="Top"
-        Margin="0"
+        Margin="3"
         Click="ShowHelp_Click"/>
 
 

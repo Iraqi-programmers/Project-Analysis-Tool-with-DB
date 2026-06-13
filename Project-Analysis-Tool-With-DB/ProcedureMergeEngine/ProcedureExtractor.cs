@@ -74,33 +74,42 @@ namespace SpAnalyzerTool.ProcedureMergeEngine
         }
 
         /// <summary>
-        /// يحاول تنفيذ البروسيجر وجلب أسماء الأعمدة الناتجة منه،
-        /// بغض النظر عن القيم أو الترتيب، وتُستخدم للمقارنة فقط.
+        /// يجلب أسماء أعمدة أول نتيجة يُرجعها الإجراء دون تنفيذه فعليًا،
+        /// باستخدام <c>sys.dm_exec_describe_first_result_set_for_object</c> الذي يُحلّل
+        /// البيانات الوصفية فقط (آمن وبلا آثار جانبية، بعكس التنفيذ الفعلي عبر FMTONLY).
+        /// تُستخدم النتيجة للمقارنة فقط، لذا الترتيب والقيم غير مهمين.
         /// </summary>
+        /// <param name="conn">اتصال SQL مفتوح بقاعدة البيانات التي تحتوي الإجراء.</param>
+        /// <param name="procName">اسم الإجراء (يُمرَّر كمعامل لمنع حقن SQL).</param>
+        /// <returns>أسماء الأعمدة، أو قائمة فارغة إذا تعذّر الاستنتاج.</returns>
         private static IEnumerable<string> TryGetProcedureOutputColumns(SqlConnection conn, string procName)
         {
             try
             {
-                using var cmd = new SqlCommand(procName, conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
+                // الوسيط الثاني = 0 يكتم أخطاء الاستنتاج ويُعيد مجموعة فارغة بدل رمي استثناء.
+                const string sql = @"
+                    SELECT name
+                    FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID(@proc), 0)
+                    WHERE name IS NOT NULL
+                    ORDER BY column_ordinal;";
 
-                using var reader = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
-                var schema = reader.GetSchemaTable();
+                using var cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add("@proc", SqlDbType.NVarChar, 257).Value = procName;
 
                 var columns = new List<string>();
-                foreach (DataRow row in schema.Rows)
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
                 {
-                    if (row["ColumnName"] is string columnName)
-                        columns.Add(columnName);
+                    if (!reader.IsDBNull(0))
+                        columns.Add(reader.GetString(0));
                 }
 
                 return columns;
             }
-            catch
+            catch (SqlException ex)
             {
-                // فشل التنفيذ (مثلاً يحتاج معلمات)، نعيد قائمة فارغة
+                // تعذّر استنتاج الأعمدة (مثلاً نتيجة ديناميكية) — نُسجّل ونُكمل بقائمة فارغة.
+                System.Diagnostics.Debug.WriteLine($"تعذّر استخراج أعمدة الإجراء '{procName}': {ex.Message}");
                 return Array.Empty<string>();
             }
         }

@@ -10,7 +10,8 @@
         Height="700"
         Width="1000"
         WindowStartupLocation="CenterScreen"
-        Background="WhiteSmoke">
+        Foreground="{StaticResource TextBrush}"
+        Background="{StaticResource BackgroundBrush}">
 
     <Window.Resources>
         <converters:LocationDisplayConverter x:Key="LocationDisplayConverter"/>
@@ -34,7 +35,7 @@
                 <TextBox x:Name="txtBackupPath" Width="600" Height="30" Margin="0,5,10,0"/>
                 <Button Content="📁 استعراض" Width="100" Click="BrowseBackup_Click" />
             </DockPanel>
-            <TextBlock x:Name="txtBackupSize" Foreground="DarkGreen" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock x:Name="txtBackupSize" Foreground="{StaticResource SuccessBrush}" HorizontalAlignment="Left"></TextBlock>
 
         </StackPanel>
         </GroupBox>
@@ -46,7 +47,7 @@
                     <TextBox  Text="{Binding ProjectPath , Mode=TwoWay}" Width="600" Height="30" FontSize="12" Margin="0,0,5,0"/>
                     <Button Content="📁 استعراض" Width="120" Click="BrowseProject_Click"/>
                 </DockPanel>
-                <TextBlock x:Name="txtProjectSize" Foreground="DarkGreen"></TextBlock>
+                <TextBlock x:Name="txtProjectSize" Foreground="{StaticResource SuccessBrush}"></TextBlock>
             </StackPanel>
         </GroupBox>
 
@@ -60,7 +61,7 @@
         <TextBlock x:Name="txtStatus"
            Grid.Row="2"
            Margin="10,50,0,0"
-           Foreground="DarkOrange"
+           Foreground="{StaticResource WarningBrush}"
            FontWeight="Bold"
             Visibility="Collapsed"
            Text="🔄 جاري التحليل، يرجى الانتظار..." />
@@ -101,7 +102,7 @@
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Status}" Value="❌ غير مستخدم">
-                                        <Setter Property="Foreground" Value="Red"/>
+                                        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -121,9 +122,9 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock 
-                       Text="{Binding Path=., Converter={StaticResource LocationDisplayConverter}}" 
-                       Foreground="Blue"
+                                            <TextBlock
+                       Text="{Binding Path=., Converter={StaticResource LocationDisplayConverter}}"
+                       Foreground="{StaticResource LinkBrush}"
                        TextDecorations="Underline"
                        Cursor="Hand"
                        Margin="0,0,5,0">
@@ -171,10 +172,10 @@
                 <TextBlock Text="{Binding TotalCount}" Margin="0,0,0,0" FontWeight="Bold"/>
                 <TextBlock Text=" : العدد الإجمالي" Margin="5,0,0,0"/>
 
-                <TextBlock Text="{Binding UsedCount}" Margin="15,0,0,0" Foreground="Green" FontWeight="Bold"/>
+                <TextBlock Text="{Binding UsedCount}" Margin="15,0,0,0" Foreground="{StaticResource SuccessBrush}" FontWeight="Bold"/>
                 <TextBlock Text=" : المستخدم" Margin="5,0,0,0"/>
 
-                <TextBlock Text="{Binding  UnusedCount}" Margin="15,0,0,0" Foreground="Red" FontWeight="Bold"/>
+                <TextBlock Text="{Binding  UnusedCount}" Margin="15,0,0,0" Foreground="{StaticResource DangerBrush}" FontWeight="Bold"/>
                 <TextBlock Text=" : غير مستخدم"/>
             </StackPanel>
 

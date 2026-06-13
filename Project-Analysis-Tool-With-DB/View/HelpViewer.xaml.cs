@@ -39,7 +39,7 @@ namespace SpAnalyzerTool.View
                 {
                     Text = item.Title,
                     FontWeight = FontWeights.Bold,
-                    Foreground = Brushes.DarkBlue,
+                    Foreground = Brushes.CornflowerBlue,
                     Margin = new Thickness(0, 10, 0, 0)
                 };
 
@@ -58,7 +58,7 @@ namespace SpAnalyzerTool.View
             {
                 Text = "📞 تواصل معنا:",
                 FontWeight = FontWeights.Bold,
-                Foreground = Brushes.DarkBlue,
+                Foreground = Brushes.CornflowerBlue,
                 Margin = new Thickness(0, 20, 0, 10)
             };
             stackPanelContent.Children.Add(contactHeader);
@@ -112,7 +112,7 @@ namespace SpAnalyzerTool.View
             {
                 Text = helpContent.Version,
                 FontStyle = FontStyles.Italic,
-                Foreground = Brushes.Gray,
+                Foreground = Brushes.Silver,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(0, 20, 3, 0)
             };
