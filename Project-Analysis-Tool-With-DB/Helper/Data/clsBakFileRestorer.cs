@@ -289,6 +289,42 @@ END";
             }
         }
 
+        /// <summary>
+        /// يحذف قاعدة بيانات مؤقتة أُنشئت أثناء الدمج/التحليل ويزيل ملفاتها الفيزيائية إن بقيت.
+        /// آمنة للاستدعاء دائمًا (لا تُطلق استثناءً) — مخصّصة للاستخدام داخل finally للتنظيف المضمون.
+        /// </summary>
+        /// <param name="masterConnection">سلسلة الاتصال بقاعدة master.</param>
+        /// <param name="dbName">اسم القاعدة المؤقتة المراد حذفها.</param>
+        /// <returns>مهمة تكتمل بعد محاولة التنظيف.</returns>
+        public static async Task DropTempDatabaseAsync(string masterConnection, string dbName)
+        {
+            if (string.IsNullOrWhiteSpace(dbName))
+                return;
+
+            try
+            {
+                using var conn = new SqlConnection(masterConnection);
+                await conn.OpenAsync();
+                await DropDatabaseIfExists(conn, dbName);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"تعذّر حذف القاعدة المؤقتة {dbName}: {ex.Message}");
+            }
+
+            // حذف الملفات الفيزيائية احتياطيًا في حال لم يُزِلها DROP DATABASE.
+            try
+            {
+                string folder = @"C:\TempDbs\";
+                SafeDeleteFile(Path.Combine(folder, $"{dbName}.mdf"));
+                SafeDeleteFile(Path.Combine(folder, $"{dbName}_log.ldf"));
+            }
+            catch
+            {
+                // تجاهل — التنظيف أفضل جهد.
+            }
+        }
+
 
         //public static async Task RestoreBackupAsync(string bakFullPath, string targetDbName, string masterConnection)
         //{

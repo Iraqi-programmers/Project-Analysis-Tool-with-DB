@@ -7,6 +7,8 @@
         mc:Ignorable="d"
         Title="📂 .bak دمج الاجراءات من ملفي"
         ResizeMode="CanMinimize"
+        WindowState="Maximized"
+        
         WindowStartupLocation="CenterScreen"
        Foreground="{StaticResource TextBrush}"
        Background="{StaticResource BackgroundBrush}"
@@ -25,7 +27,8 @@
         </Style>
 
         <local:SourceToColorConverter x:Key="SourceColorConverter"/>
-
+        <local:MergeStatusToBrushConverter x:Key="StatusBrushConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
     </Window.Resources>
     
@@ -35,18 +38,17 @@
             <!-- اختيار ملفات الباك -->
             <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Center">
                 <Button Content="استعراض" Margin="10,0" Width="80" Click="BrowseBak1_Click"/>
-                <TextBox x:Name="txtBak1" Width="400" Height="25"/>
+                <TextBox x:Name="txtBak1" Width="300" Height="37"/>
                 <TextBlock Text="🔍 الملف الاول  " Width="160" FontSize="14" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Center">
+          
                 <Button Content="استعراض" Margin="10,0" Width="80" Click="BrowseBak2_Click"/>
-                <TextBox x:Name="txtBak2" Width="400" Height="25"/>
+                <TextBox x:Name="txtBak2" Width="400" Height="37"/>
                 <TextBlock Text="🔍 الملف الثاني" Width="160" VerticalAlignment="Center" Margin="10,0,0,0"/>
             </StackPanel>
 
             <!-- زر الدمج -->
-            <Button Content="🔄 تحليل ودمج الإجراءات"
+            <Button x:Name="btnAnalyze"
+                 Content="🔄 تحليل ودمج الإجراءات"
                  Width="220" Height="40" Margin="0 10"
                  HorizontalAlignment="Center"
                  Click="AnalyzeAndMerge_Click"/>
@@ -86,33 +88,55 @@
 
             <!-- الإجراءات المدموجة -->
             <GroupBox Header="🧪 الإجراءات بعد الدمج" Grid.Column="2" Margin="5" Visibility="Collapsed" x:Name="grbResult">
-                <ListBox x:Name="MergedList" Height="200" BorderThickness="0">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox IsChecked="{Binding IsExcluded}" Margin="5" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding Name}" 
-                                   Background="{Binding Converter={StaticResource SourceColorConverter}}"
-                                   Padding="5" Margin="2" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <StackPanel>
+                    <!-- مفتاح الألوان -->
+                    <WrapPanel Margin="6,2,6,8">
+                        <TextBlock Text="● الأول فقط" Foreground="#6BB0FF" Margin="0,0,14,0"/>
+                        <TextBlock Text="● الثاني فقط" Foreground="#34D399" Margin="0,0,14,0"/>
+                        <TextBlock Text="● متطابق" Foreground="#9AA0B4" Margin="0,0,14,0"/>
+                        <TextBlock Text="● تعارض" Foreground="#FBBF24"/>
+                    </WrapPanel>
+
+                    <ListBox x:Name="MergedList" Height="220" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="6,3" Margin="1" CornerRadius="4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding IsIncluded}" VerticalAlignment="Center"
+                                                  Margin="0,0,8,0" ToolTip="تضمين في السكربت الناتج"/>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                                   MinWidth="240" FontFamily="Consolas"/>
+                                        <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center"
+                                                   Margin="10,0,0,0" FontWeight="Bold"
+                                                   Foreground="{Binding Status, Converter={StaticResource StatusBrushConverter}}"/>
+                                        <CheckBox Content="اعتمد الملف الثاني" VerticalAlignment="Center" Margin="12,0,0,0"
+                                                  IsChecked="{Binding UseSecond}"
+                                                  Visibility="{Binding IsConflict, Converter={StaticResource BoolToVis}}"
+                                                  ToolTip="عند التعارض: اعتمد نسخة الملف الثاني بدل الأول"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
             </GroupBox>
 
-            <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Right" Visibility="Collapsed" x:Name="stNewBakName">
-                <TextBox x:Name="txtOutputBakName" Width="300" Text="MergedOutput.bak" Height="30"/>
-                <TextBlock Text="📦 : اسم ملف النتائج" Width="160" Margin="20,0,-35,0"  />
-            </StackPanel>
-
+            <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Right" Visibility="Collapsed" x:Name="stNewBakName">
+              
             <!-- زر الحفظ -->
-            <Button Content="💾 حفظ الإجراءات " x:Name="btnSave" Visibility="Collapsed"
-                 Width="300" Height="40" Margin="0,20"
+            <Button Content="💾 حفظ السكربت (.sql)" x:Name="btnSave" Visibility="Collapsed"
+                 Width="300" Height="40" Margin="10,0"
                  HorizontalAlignment="Center"
                  Click="SaveMergedProcedures_Click"/>
 
+
+                <TextBox x:Name="txtOutputBakName" Width="300" Text="MergedProcedures" Height="37"/>
+                <TextBlock Text="📦 : اسم ملف السكربت (.sql)" Width="200" Margin="5,10,0,0"  />
+
+            </StackPanel>
+
             <!-- ملخص -->
-            <TextBlock x:Name="txtSummary" FontSize="14" Foreground="{StaticResource TextMutedBrush}" Margin="0,10"/>
+            <TextBlock x:Name="txtSummary" HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource TextMutedBrush}" Margin="0,10"/>
        
         </StackPanel>
     </ScrollViewer>

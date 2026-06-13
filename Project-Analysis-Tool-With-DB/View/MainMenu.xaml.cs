@@ -29,10 +29,8 @@ namespace SpAnalyzerTool
 
         private void OpenMergePage_Click(object sender, RoutedEventArgs e)
         {
-            // ميزة الدمج قيد التطوير — عند تفعيلها لاحقًا أزِل الرسالة وألغِ تعليق السطرين أدناه.
-            System.Windows.MessageBox.Show("This feature is under development. Please check back later.", "Under Development", MessageBoxButton.OK, MessageBoxImage.Information);
-            // var mergeWindow = new MergeProcedures();
-            // mergeWindow.ShowDialog();
+            var mergeWindow = new MergeProcedures();
+            mergeWindow.ShowDialog();
         }
 
         private void ShowHelp_Click(object sender, RoutedEventArgs e)
